@@ -1,0 +1,20 @@
+#!/bin/bash
+
+echo "========================================"
+echo "Starting Cuga Agent Frontend"
+echo "========================================"
+
+cd src/frontend
+
+echo "Creating virtual environment..."
+python -m venv venv
+
+echo "Activating virtual environment..."
+source venv/bin/activate
+
+echo "Installing dependencies..."
+pip install -r requirements.txt
+
+echo "Starting Streamlit app..."
+streamlit run app.py
+
