@@ -1,12 +1,12 @@
 """
 Cuga Agent - Backend API
-MVP de uma plataforma SaaS para análise de tendências de conteúdo TikTok e YouTube
 """
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from contextlib import asynccontextmanager
 import sqlite3
 from datetime import datetime
 import os
@@ -15,17 +15,6 @@ import os
 DATABASE_PATH = "cuga_agent.db"
 ANALYSIS_LIMIT_FREE = 5  # Análises gratuitas por mês
 ANALYSIS_LIMIT_STARTER = 50
-
-app = FastAPI(title="Cuga Agent API", version="1.0.0")
-
-# CORS middleware
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
 
 # Modelos Pydantic
 class AnalysisRequest(BaseModel):
@@ -147,13 +136,29 @@ def get_or_create_user(email: str = "demo@example.com"):
     conn.close()
     return {"id": user_id, "plan": plan, "analyses_count": analyses_count}
 
-# Rotas
-@app.on_event("startup")
-async def startup_event():
-    """Inicializa o banco de dados ao iniciar a aplicação"""
+# Lifespan events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Gerencia eventos de ciclo de vida da aplicação"""
+    # Startup
     init_db()
     print("✅ Database initialized")
+    yield
+    # Shutdown (se necessário no futuro)
+    pass
 
+app = FastAPI(title="Cuga Agent API", version="1.0.0", lifespan=lifespan)
+
+# CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Rotas
 @app.get("/")
 async def root():
     """Endpoint raiz"""
