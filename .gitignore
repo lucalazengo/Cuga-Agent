@@ -8,6 +8,8 @@ __pycache__/
 .env
 .venv/
 .venv
+venv/
+env/
 ENV/
 build/
 develop-eggs/
@@ -61,4 +63,7 @@ htmlcov/
 .mypy_cache/
 .dmypy.json
 dmypy.json
+
+# Streamlit
+.streamlit/
 
